@@ -1,13 +1,17 @@
 package com.example.invoicegenerator.controller;
 
 import com.example.invoicegenerator.dto.InvoiceRequestDto;
+import com.example.invoicegenerator.dto.InvoiceResponseDto;
 import com.example.invoicegenerator.model.Invoice;
 import com.example.invoicegenerator.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/api/invoice")
@@ -18,14 +22,17 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
 
     @PostMapping("/generate")
-    public Invoice generateInvoice(@RequestBody InvoiceRequestDto invoiceRequestDto){
-        String description = invoiceRequestDto.getDescription();
-        int qty = invoiceRequestDto.getQTY();
-        double price = invoiceRequestDto.getPrice();
-        double discount = invoiceRequestDto.getDiscount();
-        double vat = invoiceRequestDto.getVAT();
+public ResponseEntity<InvoiceResponseDto> createInvoice(@RequestBody InvoiceRequestDto invoiceRequestDto){
+        Invoice invoice = invoiceService.createInvoice(invoiceRequestDto);
 
-        return invoiceService.createInvoice(description,qty,price,discount,vat);
+        InvoiceResponseDto invoiceResponseDto = InvoiceResponseDto.builder()
+                .subtotal(invoice.getSubTotal())
+                .discount(invoice.getDiscount())
+                .vat(invoice.getVAT())
+                .total(invoice.getTotal())
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(invoiceResponseDto);
     }
+
 
 }
