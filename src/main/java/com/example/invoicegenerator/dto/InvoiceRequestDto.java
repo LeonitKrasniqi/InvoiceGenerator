@@ -5,16 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 
 public class InvoiceRequestDto {
-    private String Description;
-    private int QTY;
-    private double Price;
-    private double Discount;
-    private double VAT;
+    private List<ProductRequestDto> products;
+    private Double VAT;
 
 }
