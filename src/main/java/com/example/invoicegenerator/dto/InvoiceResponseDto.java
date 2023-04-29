@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class ProductRequestDto {
-    private String Description;
-    private int QTY;
-    private double Price;
-    private double Discount;
+public class InvoiceResponseDto {
+private double subtotal;
+private double discount;
+private double vat;
+private  double total;
 }
