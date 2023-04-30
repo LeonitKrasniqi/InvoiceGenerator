@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/invoice")
@@ -21,17 +25,27 @@ public class InvoiceController {
 
     private final InvoiceService invoiceService;
 
-    @PostMapping("/generate")
-public ResponseEntity<InvoiceResponseDto> createInvoice(@RequestBody InvoiceRequestDto invoiceRequestDto){
-        Invoice invoice = invoiceService.createInvoice(invoiceRequestDto);
 
-        InvoiceResponseDto invoiceResponseDto = InvoiceResponseDto.builder()
-                .subtotal(invoice.getSubTotal())
-                .discount(invoice.getDiscount())
-                .vat(invoice.getVAT())
-                .total(invoice.getTotal())
-                .build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(invoiceResponseDto);
+    @PostMapping("/generate")
+    public ResponseEntity<List<InvoiceResponseDto>> createInvoice(@RequestBody InvoiceRequestDto invoiceRequestDto) {
+        List<Invoice> invoices = invoiceService.createInvoices(invoiceRequestDto);
+        List<InvoiceResponseDto> invoiceResponseDtos = new ArrayList<>();
+
+        for (int i = 0; i < invoices.size(); i++) {
+            Invoice invoice = invoices.get(i);
+            UUID invoiceId = UUID.randomUUID();
+
+            InvoiceResponseDto invoiceResponseDto = InvoiceResponseDto.builder()
+                    .invoiceId(invoiceId)
+                    .subtotal(invoice.getSubTotal())
+                    .vat(invoice.getVAT())
+                    .total(invoice.getTotal())
+                    .build();
+
+            invoiceResponseDtos.add(invoiceResponseDto);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(invoiceResponseDtos);
     }
 
 
